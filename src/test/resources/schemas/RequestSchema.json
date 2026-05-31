@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Request Schema",
+  "type": "object",
+  "properties": {
+    "programCode": {
+      "type": "string"
+    },
+    "userId": {
+      "type": "string"
+    },
+    "quantity": {
+      "type": "number",
+      "minimum": 0,
+      "exclusiveMinimum": true
+    },
+    "variables":{
+      "type": "object"
+    }
+  },
+  "required": [
+    "programCode",
+    "userId",
+    "quantity"
+  ]
+}

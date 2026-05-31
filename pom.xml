@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>io.github.ygrip.example</groupId>
+  <artifactId>testara-example-api-automation</artifactId>
+  <name>Testara Sample API Automation</name>
+  <version>1.0-SNAPSHOT</version>
+
+  <parent>
+    <groupId>io.github.ygrip</groupId>
+    <artifactId>testara-core-parent</artifactId>
+    <version>2.0.3</version>
+    <relativePath />
+  </parent>
+
+  <developers>
+    <developer>
+      <id>ygrip</id>
+      <name>Yunaz Gilang Ramadhan</name>
+      <url>https://github.com/ygrip</url>
+    </developer>
+  </developers>
+
+  <properties>
+    <java.version>21</java.version>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <encoding>UTF-8</encoding>
+    <takari-version>2.3.2</takari-version>
+    <failsafe.version>3.5.1</failsafe.version>
+
+    <jvm.options>
+      --add-opens java.base/java.lang=ALL-UNNAMED
+      --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+      --add-opens java.base/java.lang.invoke=ALL-UNNAMED
+      --add-opens java.base/java.util=ALL-UNNAMED
+      --add-opens java.base/java.net=ALL-UNNAMED
+      --add-opens java.base/java.security=ALL-UNNAMED
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED
+      --add-opens java.base/sun.nio.ch=ALL-UNNAMED
+      --add-opens java.base/sun.net.www.protocol.http=ALL-UNNAMED
+      --add-exports java.base/sun.nio.ch=ALL-UNNAMED
+      --add-exports java.base/sun.security.util=ALL-UNNAMED
+      -Xverify:none
+      -Xms256m -Xmx512m
+      -XX:+TieredCompilation
+      -XX:TieredStopAtLevel=1
+      -XX:+UseG1GC
+      -XX:+UseCompressedOops
+      -XX:+UseCompressedClassPointers
+      -XX:+DisableAttachMechanism
+      -XX:ReservedCodeCacheSize=64m
+      -XX:InitialCodeCacheSize=16m
+      -XX:MaxMetaspaceSize=256m
+      -XX:CompressedClassSpaceSize=64m
+      -XX:MaxGCPauseMillis=200
+      -Dmaven.javadoc.skip=true
+      -Djdk.net.URLClassPath.disableClassPathURLCheck=true
+      -Djava.awt.headless=true
+      -Djava.net.preferIPv4Stack=true
+      -Dspring.jmx.enabled=false
+    </jvm.options>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.github.ygrip</groupId>
+      <artifactId>testara-streaming-cucumber</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.github.ygrip</groupId>
+      <artifactId>testara-api-cucumber</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Optional integration with junit5 -->
+    <dependency>
+      <groupId>io.github.ygrip</groupId>
+      <artifactId>testara-junit5</artifactId>
+    </dependency>
+  </dependencies>
+
+  <profiles>
+    <profile>
+      <id>junit5</id>
+      <properties>
+        <it.test>io.github.ygrip.automation.Junit5RunnerTests</it.test>
+      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.junit.platform</groupId>
+          <artifactId>junit-platform-console-standalone</artifactId>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>${failsafe.version}</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <includeJUnit5Engines>
+                <engine>testara-cucumber</engine>
+              </includeJUnit5Engines>
+              <excludeJUnit5Engines>
+                <engine>junit-jupiter</engine>
+                <engine>junit-platform-suite</engine>
+                <engine>junit-vintage</engine>
+              </excludeJUnit5Engines>
+              <test>${it.test}</test>
+              <printSummary>false</printSummary>
+              <failIfNoTests>false</failIfNoTests>
+              <argLine>${jvm.options}</argLine>
+              <useUnlimitedThreads>false</useUnlimitedThreads>
+              <reuseForks>true</reuseForks>
+              <rerunFailingTestsCount>0</rerunFailingTestsCount>
+              <forkCount>1</forkCount>
+              <parallel>none</parallel>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>junit4</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <it.test>io.github.ygrip.automation.Junit4RunnerTests</it.test>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>${failsafe.version}</version>
+            <dependencies>
+              <dependency>
+                <groupId>org.apache.maven.surefire</groupId>
+                <artifactId>surefire-junit47</artifactId>
+                <version>${failsafe.version}</version>
+              </dependency>
+            </dependencies>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <test>${it.test}</test>
+              <printSummary>false</printSummary>
+              <failIfNoTests>false</failIfNoTests>
+              <argLine>${jvm.options}</argLine>
+              <useUnlimitedThreads>false</useUnlimitedThreads>
+              <reuseForks>true</reuseForks>
+              <rerunFailingTestsCount>0</rerunFailingTestsCount>
+              <forkCount>1</forkCount>
+              <parallel>none</parallel>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>io.github.ygrip</groupId>
+            <artifactId>testara-reporter-plugin</artifactId>
+            <version>${project.parent.version}</version>
+            <executions>
+              <execution>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>cucumber-summary</goal>
+                </goals>
+                <configuration>
+                  <targetLocation>${project.build.directory}/cucumber-reports/</targetLocation>
+                  <outputLocation>${project.build.directory}/site/</outputLocation>
+                  <reportTemplate>testara-style-report</reportTemplate>
+                  <reportName>test-report</reportName>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <repositories>
+    <repository>
+      <id>maven-central</id>
+      <name>maven-central</name>
+      <url>https://repo1.maven.org/maven2/</url>
+      <layout>default</layout>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>maven-central</id>
+      <name>maven-central</name>
+      <url>https://repo1.maven.org/maven2/</url>
+      <layout>default</layout>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-toolchains-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>toolchain</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <toolchains>
+            <jdk>
+              <version>21</version>
+            </jdk>
+          </toolchains>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <release>${java.version}</release>
+          <compilerArgs>
+            <arg>-Xlint:deprecation</arg>
+            <arg>-Xlint:unchecked</arg>
+            <arg>-parameters</arg>
+          </compilerArgs>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>${lombok.version}</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-sources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeArtifactIds>
+                testara-cucumber,
+                testara-ui-cucumber
+              </includeArtifactIds>
+              <classifier>sources</classifier>
+              <outputDirectory>
+                ${project.basedir}/target/step_definitions/src
+              </outputDirectory>
+              <includes>**/*.java</includes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
